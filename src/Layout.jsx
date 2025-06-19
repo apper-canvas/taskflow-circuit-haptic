@@ -1,16 +1,21 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { useSelector } from 'react-redux'
 import { motion, AnimatePresence } from 'framer-motion'
 import ApperIcon from '@/components/ApperIcon'
 import { routes } from '@/config/routes'
 import QuickAddModal from '@/components/organisms/QuickAddModal'
 import ProgressRing from '@/components/atoms/ProgressRing'
-
+import { AuthContext } from '@/App'
 function Layout() {
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  
+  // Get authentication state and methods
+  const { user } = useSelector((state) => state.user)
+  const { logout } = useContext(AuthContext)
 
   // Mock progress for demonstration
   const completedToday = 8
@@ -61,7 +66,7 @@ function Layout() {
             </div>
           </div>
 
-          {/* Right side */}
+{/* Right side */}
           <div className="flex items-center gap-3">
             {/* Progress ring */}
             <div className="hidden sm:flex items-center gap-2">
@@ -70,6 +75,27 @@ function Layout() {
                 {completedToday}/{totalToday}
               </span>
             </div>
+
+            {/* User info and logout */}
+            {user && (
+              <div className="hidden md:flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-sm font-medium text-surface-900">
+                    {user.firstName} {user.lastName}
+                  </div>
+                  <div className="text-xs text-surface-600">
+                    {user.emailAddress}
+                  </div>
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-2 hover:bg-surface-100 rounded-button transition-colors text-surface-600 hover:text-surface-900"
+                  title="Logout"
+                >
+                  <ApperIcon name="LogOut" size={18} />
+                </button>
+              </div>
+            )}
 
             {/* Quick add button */}
             <motion.button
